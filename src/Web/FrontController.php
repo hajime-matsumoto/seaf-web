@@ -27,16 +27,20 @@ class FrontController extends FW\FrontController
         // Viewを使えるようにする
         $this->register('view','Seaf\View\View');
 
-        $this->event()->on('before.dispatch-loop', array($this, '_beforeDispatchLoop'));
-        $this->event()->on('after.dispatch-loop', array($this, '_afterDispatchLoop'));
+        $this->event()->on('before.dispatch-loop', array($this, 'beforeDispatchLoop'));
+        $this->event()->on('after.dispatch-loop', array($this, 'afterDispatchLoop'));
+
+        $this->bind( $this, array(
+            'render' => '_render'
+        ));
     }
 
-    public function _beforeDispatchLoop( )
+    public function beforeDispatchLoop( )
     {
         ob_start();
     }
 
-    public function _afterDispatchLoop( )
+    public function afterDispatchLoop( )
     {
        $this->render(ob_get_clean());
     }
@@ -44,7 +48,7 @@ class FrontController extends FW\FrontController
     /**
      * レンダリング
      */
-    public function render($body)
+    public function _render($body = '')
     {
         if ($this->has('view')) {
             $view_name = $this->get('view');
