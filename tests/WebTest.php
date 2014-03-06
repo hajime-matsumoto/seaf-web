@@ -8,6 +8,8 @@ class WebTest extends \PHPUnit_Framework_TestCase
     protected $req;
 
     public function setup ( ) {
+        Seaf::config()->load(__DIR__.'/setting.yaml');
+        Seaf::config()->set('root.path',__DIR__);
         Seaf::web()->init();
         $this->web = Seaf::web();
     }
@@ -104,5 +106,29 @@ class WebTest extends \PHPUnit_Framework_TestCase
         $array = $web->response()->toArray();
         $this->assertTrue($array['params']['flg1']);
         $this->assertTrue($array['params']['flg2']);
+    }
+
+    /**
+     * Viewをテストする
+     */
+    public function testView( )
+    {
+        Seaf::system()->useFake();
+
+        // SeafのConfigがカスケードされる
+        $web = Seaf::web();
+
+        $this->assertTrue($web->config() === Seaf::config());
+
+        // ルーティングを設定
+        $web->router()->map('/', function ($req, $res, $web) {
+            $web->set('view','index'); // INDEX VIEWを使うという宣言
+            $web->view()->param('name', 'テストページ');
+        });
+
+        // 実行する
+        ob_start();
+        $web->run();
+        $this->assertEquals('<h1>テストページ</h1>', trim(ob_get_clean()));
     }
 }

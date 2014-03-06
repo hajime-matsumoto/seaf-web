@@ -1,0 +1,15 @@
+default:
+    domain: www.mmizui.com
+    path:
+        public: public
+        logs: logs
+        assets: public/assets
+        view: view
+    lib: lib
+    namespace: Mmizui
+    view:
+        path: views
+production:
+    mode: prodution
+development:
+    mode: development

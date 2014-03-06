@@ -24,6 +24,34 @@ class FrontController extends FW\FrontController
     {
         parent::init();
 
+        $this->event()->on('before.dispatch-loop', array($this, '_beforeDispatchLoop'));
+        $this->event()->on('after.dispatch-loop', array($this, '_afterDispatchLoop'));
+    }
+
+    public function _beforeDispatchLoop( )
+    {
+        ob_start();
+    }
+
+    public function _afterDispatchLoop( )
+    {
+       $this->render(ob_get_clean());
+    }
+
+    /**
+     * レンダリング
+     */
+    public function render($body)
+    {
+        if ($this->has('view')) {
+            $view_name = $this->get('view');
+
+            $this
+                ->response()
+                ->write($this->view()->render($view_name))
+                ->send();
+        }
+        echo $body;
     }
 }
 
