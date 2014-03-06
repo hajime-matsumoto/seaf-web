@@ -24,6 +24,9 @@ class FrontController extends FW\FrontController
     {
         parent::init();
 
+        // Viewを使えるようにする
+        $this->register('view','Seaf\View\View');
+
         $this->event()->on('before.dispatch-loop', array($this, '_beforeDispatchLoop'));
         $this->event()->on('after.dispatch-loop', array($this, '_afterDispatchLoop'));
     }
