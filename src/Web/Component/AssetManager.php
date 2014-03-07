@@ -96,6 +96,7 @@ class AssetManager extends FrontController
         $this
             ->response( )
             ->header('Content-Type', $this->contentType($uri))
+            ->cache( 86400)
             ->sendHeaders();
         ob_end_clean();
 
