@@ -31,7 +31,8 @@ class FrontController extends FW\FrontController
         $this->event()->on('after.dispatch-loop', array($this, 'afterDispatchLoop'));
 
         $this->bind( $this, array(
-            'render' => '_render'
+            'render' => '_render',
+            'redirect' => '_redirect'
         ));
     }
 
@@ -52,13 +53,25 @@ class FrontController extends FW\FrontController
     {
         if ($this->has('view')) {
             $view_name = $this->get('view');
-
-            $this
-                ->response()
-                ->write($this->view()->render($view_name))
-                ->send();
+            $body = $this->view()->render($view_name);
         }
-        echo $body;
+
+        $this->response()->write($body);
+
+        $this->event()->trigger('before.output', $this->response());
+
+        $this->response()->send();
+    }
+
+    /**
+     * リダイレクト
+     */
+    public function _redirect( $uri, $code = 303 )
+    {
+        $this->response( )
+            ->status($code)
+            ->header('Location', $this->request()->getUriMask().'/'.ltrim($uri,'/'))
+            ->send( );
     }
 }
 

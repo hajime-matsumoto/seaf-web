@@ -70,6 +70,14 @@ class Response extends FWComp\Response
         Seaf::system()->halt($this->body);
     }
 
+    public function sendJson( )
+    {
+        $json = $this->toJson( );
+
+        $this->init();
+        $this->header('Content-Type', 'application/json')->write($json)->send();
+    }
+
 }
 
 /* vim: set expandtab ts=4 sw=4 sts=4: et*/

@@ -90,7 +90,7 @@ class AssetManager extends FrontController
 
         if ($file === false) {
             $this->event()->trigger('notfound',$this);
-            die();
+            Seaf::system()->halt();
         }
 
         $this
@@ -132,7 +132,13 @@ class AssetManager extends FrontController
         $cmd = $map['cmd'];
         $opt = $this->config()->getf($map['opt']);
 
+        if ( $cmd == 'sass' ) {
+            $opt.= ' -I '.implode(' -I', $this->assets_path_list);
+            $opt.= ' ';
+        }
+
         $command = new Command($cmd,$opt);
+
 
         $command
             ->inputFile($file)
@@ -140,10 +146,11 @@ class AssetManager extends FrontController
             ->getStdOut($out)
             ->getStdError($err);
 
-        $err = stream_get_contents($err);
+        $line = trim(fgets($err));
 
-        if (strlen($err) > 0) {
-            $this->response()->status(500)->write($err)->send();
+        if (strlen($line) > 0) {
+            $err = $line.stream_get_contents($err);
+            $this->response()->status(200)->write($err)->send();
         }
 
         while ($line = fgets($out)) {
